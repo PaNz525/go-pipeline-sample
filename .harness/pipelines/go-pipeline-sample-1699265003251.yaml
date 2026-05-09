@@ -1,0 +1,59 @@
+pipeline:
+  identifier: Build_go_pipeline_sample_1699265036780
+  name: Build go-pipeline-sample
+  orgIdentifier: default
+  projectIdentifier: Sampleproject
+  properties:
+    ci:
+      codebase:
+        connectorRef: account.Github_OAuth_1699264997537
+        repoName: akavakon72/go-pipeline-sample
+        build: <+input>
+  stages:
+    - stage:
+        identifier: build
+        name: build
+        spec:
+          cloneCodebase: true
+          execution:
+            steps:
+              - step:
+                  identifier: gobuild
+                  name: Run Unit Tests
+                  spec:
+                    connectorRef: <+input>
+                    image: golang:1.18
+                    shell: Sh
+                    command: |-
+                      set +e
+                      go get gotest.tools/gotestsum
+                      gotestsum --format=standard-verbose --junitfile unit-tests.xml
+                      exit 0
+                    reports:
+                      type: JUnit
+                      spec:
+                        paths:
+                          - "*.xml"
+                  timeout: ""
+                  type: Run
+              - step:
+                  identifier: gotest
+                  name: build app
+                  spec:
+                    connectorRef: <+input>
+                    image: golang:1.18
+                    shell: Sh
+                    command: |-
+                      set +e
+                      go get gotest.tools/gotestsum
+                      CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -tags netgo
+                      exit 0
+                  timeout: ""
+                  type: Run
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+        type: CI

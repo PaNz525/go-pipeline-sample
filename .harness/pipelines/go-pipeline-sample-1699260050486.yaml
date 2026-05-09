@@ -1,0 +1,34 @@
+pipeline:
+  identifier: Build_go_pipeline_sample_1699260059533
+  name: Build go-pipeline-sample
+  orgIdentifier: default
+  projectIdentifier: Sampleproject
+  properties:
+    ci:
+      codebase:
+        build: <+input>
+        connectorRef: account.Github_OAuth_1699260043843
+        repoName: go-pipeline-sample
+  stages:
+    - stage:
+        identifier: build
+        name: build
+        spec:
+          cloneCodebase: true
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Success
+                  identifier: Success
+                  spec:
+                    shell: Sh
+                    command: echo "success"
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+        type: CI
+        description: ""
